@@ -1,30 +1,33 @@
 import bagel.*;
 import java.util.Random;
 
-import javax.swing.*;
-
 /**
  * An example Bagel game.
  *
  * @author Eleanor McMurtry
  */
 public class FlyingGame extends AbstractGame {
-    private Image plane;
+    private Player player;
     private Image bagel;
     private Image balloon;
-    private double x = Window.getWidth() / 2;
-    private double y = Window.getHeight() / 2;
+    private double x;
+    private double y;
+    private double balloonX;
+    private double balloonY;
 
-    private static Random random = new Random();
-    private double balloonX = random.nextInt(Window.getWidth());
-    private double balloonY = random.nextInt(Window.getHeight());
-
-
+    // constructor
     public FlyingGame() {
-
         bagel = new Image("res/land.jpeg");
-        plane = new Image("res/plane.png");
         balloon = new Image("res/balloon.png");
+
+        player = new Player();
+        setBalloonNewRandomLocation();
+    }
+
+    private void setBalloonNewRandomLocation() {
+        Random random = new Random();
+        balloonX = random.nextInt(Window.getWidth());
+        balloonY = random.nextInt(Window.getHeight());
     }
 
     /**
@@ -42,26 +45,35 @@ public class FlyingGame extends AbstractGame {
     @Override
     public void update(Input input) {
         double speed = 5f;
-        if (input.isDown(Keys.LEFT) && (x >= 0)) {
-            x -= speed;
+        double dx = 0;
+        double dy = 0;
+
+        if (input.isDown(Keys.LEFT) && (player.getX() >= 0)) {
+            dx -= speed;
         }
-        if (input.isDown(Keys.RIGHT) && (x <= Window.getWidth())) {
-            x += speed;
+        if (input.isDown(Keys.RIGHT) && (player.getX() <= Window.getWidth())) {
+            dx += speed;
         }
-        if (input.isDown(Keys.UP) && (y >= 0 )) {
-            y -= speed;
+        if (input.isDown(Keys.UP) && (player.getY() >= 0 )) {
+            dy -= speed;
         }
-        if (input.isDown(Keys.DOWN) && (y <= Window.getHeight())) {
-            y += speed;
+        if (input.isDown(Keys.DOWN) && (player.getY() <= Window.getHeight())) {
+            dy += speed;
+        }
+        player.move(dx, dy);
+
+        if (Math.sqrt((player.getX() - balloonX) * (player.getX() - balloonX) + (player.getY() - balloonY) * (player.getY() - balloonY)) < 50) {
+            setBalloonNewRandomLocation();
         }
 
         if (input.wasPressed(Keys.ESCAPE)) {
             Window.close();
         }
 
-        bagel.draw(Window.getWidth() / 2, Window.getHeight() / 2);
-        plane.draw(x, y);
-        balloon.draw(balloonX, balloonY);
 
+        bagel.draw(Window.getWidth() / 2, Window.getHeight() / 2);
+
+        balloon.draw(balloonX, balloonY);
+        player.render();
     }
 }
