@@ -10,8 +10,6 @@ public class FlyingGame extends AbstractGame {
     private Player player;
     private Image bagel;
     private Image balloon;
-    private double x;
-    private double y;
     private double balloonX;
     private double balloonY;
 
